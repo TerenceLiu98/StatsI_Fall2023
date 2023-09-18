@@ -26,7 +26,7 @@ RUN install2.r --error --skipinstalled -n -1 \
     && R -q -e 'remotes::install_github("https://github.com/dcomtois/summarytools/tree/0-8-9")'
 
 # Install LaTeX 
-RUN apt install texlive texlive-science texlive-latex-extra latexmk
+#RUN apt install texlive texlive-science texlive-latex-extra latexmk
 
 # Install Python packages
 COPY requirements.txt /tmp/pip-tmp/
