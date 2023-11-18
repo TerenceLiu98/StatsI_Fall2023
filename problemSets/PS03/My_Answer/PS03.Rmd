@@ -1,0 +1,159 @@
+---
+title: "Problem Set 3 - My Answer"
+author: 
+  - Junjie LIU:
+      email: liuj13@tcd.ie
+      institute: [TCD-polisci]
+      correspondence: true
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+institute:
+  - TCD-polisci: Department of Political Science, Trinity College Dublin, 2 Clare, Street, Dublin 2, Ireland
+toc: false
+output:
+  bookdown::pdf_document2:
+    includes:
+      in_header: dependency.sty
+    pandoc_args:
+      - --lua-filter=../../../environment/scholarly-metadata.lua
+      - --lua-filter=../../../environment/author-info-blocks.lua
+---
+
+\section*{Instructions}
+	\begin{itemize}
+	\item Please show your work! You may lose points by simply writing in the answer. If the problem requires you to execute commands in \texttt{R}, please include the code you used to get your answers. Please also include the \texttt{.R} file that contains your code. If you are not sure if work needs to be shown for a particular problem, please ask.
+  \item Your homework should be submitted electronically on GitHub.
+  \item This problem set is due before 23:59 on Sunday November 19, 2023. No late assignments will be accepted.
+  \item Total available points for this homework is 80.
+\end{itemize}
+
+\section*{Question 1}
+\vspace{.25cm}
+\noindent We are interested in knowing how the difference in campaign spending between incumbent and challenger affects the incumbent's vote share. 
+	\begin{enumerate}
+		\item Run a regression where the outcome variable is \texttt{voteshare} and the explanatory variable is \texttt{difflog}.
+		\item Make a scatterplot of the two variables and add the regression line.
+		\item Save the residuals of the model in a separate object.
+		\item Write the prediction equation.
+	\end{enumerate}
+
+```{R}
+data <- read.csv("../../../datasets/incumbents_subset.csv")
+model <- lm(data$voteshare~data$difflog)
+print(model)
+summary(model)
+
+plot(data$difflog, data$voteshare, main = "Scatter Plot of difflog and voteshare", 
+     xlab = "Difflog", ylab = "Vote Share", frame = FALSE)
+abline(lm(model), col = "blue")
+residual <- resid(model)
+```
+
+\textcolor{blue}{Based on the result given by the regression model, we can find that there is a positive relation between \texttt{voteshare} and \texttt{difflog} and the slope is $0.04167$ means one unit increase of \texttt{difflog} is related to $0.04167$ increase in \texttt{voteshare}. The model can be noted as:}
+
+$$\hat{y} = 0.57903 + 0.04167 \cdot x$$
+\textcolor{blue}{where $x$ is \texttt{difflog}.}
+
+\newpage
+
+\section*{Question 2}
+\noindent We are interested in knowing how the difference between incumbent and challenger's spending and the vote share of the presidential candidate of the incumbent's party are related.	\vspace{.25cm}
+	\begin{enumerate}
+		\item Run a regression where the outcome variable is \texttt{presvote} and the explanatory variable is \texttt{difflog}.
+		\item Make a scatterplot of the two variables and add the regression line. 
+		\item Save the residuals of the model in a separate object.
+		\item Write the prediction equation.
+	\end{enumerate}
+	
+```{R}
+data <- read.csv("../../../datasets/incumbents_subset.csv")
+model <- lm(data$presvote~data$difflog)
+print(model)
+
+summary(model)
+plot(data$difflog, data$presvote, main = "Scatter Plot of difflog and presshare", 
+     xlab = "Difflog", ylab = "Pres Vote", frame = FALSE)
+abline(lm(model), col = "blue")
+residual <- resid(model)
+```
+\textcolor{blue}{Based on the model's summary, we can see that there is a positive relationship between the \texttt{difflog} and \texttt{presvote}, where given one unit of \texttt{difflog} may leds \texttt{presvote} increases $0.02384$.}
+
+$$\hat{y} = 0.50758 + 0.02384 \cdot x$$
+\textcolor{blue}{where $x$ is \texttt{difflog}.}
+
+	
+\newpage	
+
+\section*{Question 3}
+\noindent We are interested in knowing how the vote share of the presidential candidate of the incumbent's party is associated with the incumbent's electoral success.
+	\vspace{.25cm}
+	\begin{enumerate}
+		\item Run a regression where the outcome variable is \texttt{voteshare} and the explanatory variable is \texttt{presvote}.
+		\item Make a scatterplot of the two variables and add the regression line. 
+		\item Write the prediction equation.
+	\end{enumerate}
+	
+```{R}
+data <- read.csv("../../../datasets/incumbents_subset.csv")
+model <- lm(data$voteshare~data$presvote)
+print(model)
+
+summary(model)
+plot(data$presvote, data$voteshare, main = "Scatter Plot of presvote and voteshare", 
+     xlab = "Pres Vote", ylab = "Vote Share", frame = FALSE)
+abline(lm(model), col = "blue")
+residual <- resid(model)
+```
+\textcolor{blue}{Based on the model's summary, we can see that there is a positive relationship between the \texttt{presvote} and \texttt{voteshare}, where given one unit of \texttt{presvote} may leds \texttt{voteshare} increases $0.388$.}
+
+$$\hat{y} = 0.4413 + 0.3880  \cdot x$$
+\textcolor{blue}{where $x$ is \texttt{presvote}.}
+	
+
+\newpage	
+\section*{Question 4}
+\noindent The residuals from part (a) tell us how much of the variation in \texttt{voteshare} is $not$ explained by the difference in spending between incumbent and challenger. The residuals in part (b) tell us how much of the variation in \texttt{presvote} is $not$ explained by the difference in spending between incumbent and challenger in the district.
+	\begin{enumerate}
+		\item Run a regression where the outcome variable is the residuals from Question 1 and the explanatory variable is the residuals from Question 2.
+		\item Make a scatterplot of the two residuals and add the regression line.
+		\item Write the prediction equation.
+	\end{enumerate}
+	
+```{R}
+data <- read.csv("../../../datasets/incumbents_subset.csv")
+model_one <- lm(data$voteshare~data$difflog)
+model_two <- lm(data$presvote~data$difflog)
+
+model <- lm(resid(model_one)~resid(model_two))
+print(model)
+
+summary(model)
+plot(resid(model_two), resid(model_one), main = "Scatter Plot of two Residual", 
+     xlab = "Residual of Model two", ylab = "Residual of Model one", frame = FALSE)
+abline(lm(model), col = "blue")
+residual <- resid(model)
+```
+\textcolor{blue}{Based on the model's summary, we can see that there is a positive relationship between the residual of model one and residual of model one, where given one unit of residual of model two may leds residual of model one increases $0.2569$.}
+
+$$\hat{y} = -2.242^{-20} + 0.2569  \cdot x$$
+\textcolor{blue}{where $x$ is residual of model two.}
+	
+\newpage	
+
+\section*{Question 5}
+\noindent What if the incumbent's vote share is affected by both the president's popularity and the difference in spending between incumbent and challenger? 
+	\begin{enumerate}
+		\item Run a regression where the outcome variable is the incumbent's \texttt{voteshare} and the explanatory variables are \texttt{difflog} and \texttt{presvote}.
+		\item Write the prediction equation.
+		\item What is it in this output that is identical to the output in Question 4? Why do you think this is the case?
+	\end{enumerate}
+	
+```{R}
+data <- read.csv("../../../datasets/incumbents_subset.csv")
+model <- lm(data$voteshare~(data$difflog+data$presvote))
+print(model)
+
+summary(model)
+```
+
+$$\hat{y} = 0.44864 + 0.03554 \cdot x_0 + 0.25688 \cdot x_1$$
+\textcolor{blue}{where $x_0$ is \texttt{difflog} and $x_1$ is \texttt{presvote}. Based on the Q4 and Q5's result, we can find that the coefficient of $x1$ in Q5's model and $x$ in Q4's model are approximately equal. In other words, the co-variation between \texttt{presvote} and \texttt{voteshare} cannot been explained by the \texttt{difflog}.}
